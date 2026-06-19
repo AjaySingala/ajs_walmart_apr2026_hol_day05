@@ -40,7 +40,7 @@ import config
 
 
 
-# TODO: Store the embedding model name from the environment variable into a variable named EMBED_NAME
+# TODO: Store the embedding model name from the environment variable into a variable named EMBED_MODEL
 
 
 llm = ChatOpenAI(model=MODEL_NAME, temperature=0)
