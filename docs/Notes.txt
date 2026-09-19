@@ -380,7 +380,7 @@ Coordinator/Orchestrator that defines the WF.
 - what is the starting point (which node) in the WF.
 - which is the end point.
 
-LamgSmith:
+LangSmith:
 ---
 - Register on the smith.langchain.com
 - Free trial
