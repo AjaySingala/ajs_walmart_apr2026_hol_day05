@@ -1,387 +1,222 @@
-Day 01:
-=======
-System Message: Default behavior of the LLM (AI model)
-	You are an expert Python programmer and trainer.
-	You are an SME in Marketing Strategies
-User Message: Queries submitted by end-users.
-	Summarize this document.
-	What is the schedule of the latest FIFA world cup?
-AI/Assistant Message: The response from the LLM (model)
+3 types of messages:
+- System Message
+- User Message
+- AI Message
 
-User Message: 
-You are an expert stock analyst.
-Attached is a PDF of XYZ company.
-Can you tell me if this is a good option to invest in for the short term?
-Give your answer in 10 bullet points.
+It is not necessary that 1 word == 1 token.
+It may be possible that 1 word is broken down into 2 or more tokens.
+Not just words, it also includes all characters, punctuations, special characters.
 
-You are a Personal Assistant.
-Answer queries or instructions from users.
+Machines do not understand human spoken language.
+They only understand numbers.
+So, tokens are represented as numbers.
 
-LLM: Large Language Model:
---------------------------
-Large: Size of the data used to train the model is quite large + the internal parameters.
-	- Data is collected from all over the internet from the public domain.
-	- Text, images, videos, files (pdf, txt, csv, excel, docx etc.)
-	- ALSO, sometimes purchase data from wherever.
+Every model (LLM) has it's own Vocabulary.
+
+Tokenization
+Vectorization
+	- Count
 	
-Language: NLP: Spoken language -> 
-	- LLMs can understand spoken (natural) language
-	- Can machines/systems really understand English or any language?
-	- They can only understand numbers!
+Prompt: 
+The capital of France is
 
-Tokenization:	
-Sentences are borken down into words.
-Words are converted into "tokens" - numerical representation of words.
-not just words, punctuations, special characters: + - ( > * & ~! @ , . ?
+Inference:
+Los Angeles		0.30
+Paris			0.40
+Rome			0.15
+Tokyo			0.1
+Floor			0.01
+New York		0.20
+Car				0.01
+:
+:
 
-Every LLM has it's own vocabulary of these "tokens" for any language that it supports.
-vocabulary === dictionary
+top-p = 0.9 (90%)
+Paris			0.40
+Los Angeles		0.30
+New York		0.20
 
-1 word != 1 token
-1 word could be broken down into >1 token.
-Capitalization: 77382, 2860
-Digitization:	46997, 2860
+Output:
+The capital of France is Paris
 
-Probability:
-LLM generates a list of relevant "most probable" next words:
-fence
-wall
-moon
-toy
-baby
-dog
-sofa
-table
-chair
+top-k: 25 / 50 / 200
+Determines the size of the list of probable words to work on.
 
-Query: Write a creative poem on Introduction to Generative AI
-LLM Input: Write a creative poem on Introduction to Generative AI
-LLM generates a list of most probable words and picks one:
-
-Write a creative poem on Introduction to Generative AI
-Generative
-
-I: 
-Write a creative poem on Introduction to Generative AI
-Generative
-O:
-Write a creative poem on Introduction to Generative AI
-Generative AI
-
-I:
-Write a creative poem on Introduction to Generative AI
-Generative AI
-O:
-Write a creative poem on Introduction to Generative AI
-Generative AI:
-
-
-Tokens:
-Bank: Same word has a different meaning in a different context.
-Financial Bank			6922
-Blood Bank				6922
-The bank of a river		6922
-
-Tokenization:	Breaking down sentences into words: I like AI Capitalization -> ["I", "like", "AI", "Capital", "ization"]
-Vectorization:	Map the tokens to individual unique IDs/numbers ["I", "like", "AI"] -> [102, 96, 43]
-Embeddings:		Convert IDs into "deep vectors", to Add meaning and context. 
-	- ["I", "like", "AI"] -> [[0.12,0.5], [0.88,0.10], [0.41, 0.67]]
-	- GPS co-ordinates
+Tokenization
+Vectorization
+Embeddings
+	- Adding meaning and context to the words.
 	
-dog
-cat
-puppy
-kitten
-man
-woman
-king
-queen
+Bank
+- Blood bank
+- Financial Bank
+- Bank of a river
 
+What can I find near a river bank.
+What is the interest rate of a 20 year home loan?
 
-LLMs: very complex Neural Networks
-Trained to understnd the significance of each word with every other word in a given context.
+I love AI
+Tokenization: ["I", "love", "AI"]
+Vectorization: [102, 450, 89]
+Embedding (coordinates): [ [0.12, 0.5], [0.88, 0.1], [0.4, 0.9]]
+	- GPS coordinates.
+	
+VectorDBs:
+ChromaDB
+FAISS
+Weaviate
+pgvector
 
-Context Window:
-System prompt
-User prompt
-Documents (RAG)
-Additional context (info, examples, etc.)
-Output
-
-Context Window size: 8000 tokens
-System prompt:   200 tokens
-User prompt:	 100 tokens
---------------------------
-				 300 tokens
-8000 - 300 = 7700 tokens -> available for the model to reply.
-
-System prompt:   200 tokens
-User prompt:	 100 tokens
-Document:		3000 tokens
---------------------------
-				3300 tokens
-8000 - 3300 = 4700 tokens -> available for the model to reply.
-
-System prompt:   200 tokens
-User prompt:	 100 tokens
-Document:		3000 tokens
-Additional info:1000 tokens
---------------------------
-				4300 tokens
-8000 - 3300 = 3700 tokens -> available for the model to reply.
-
-If the AI response is > than the available # of tokens for the output, the response will be truncated.
-
-Temperature: between 0 and 1.
-The more it is towards 0, the more deterministic will be the response of the LLM.
-The more it is towards 1, the more creative and varying will be the response of the LLM.
-
-For the same question, you expect the same answer (more or less), the temperature value must be closer to 0.
-For variety (creativity, randomness, etc.), the temperature value must be closer to 1.
-
-top-p: between 0 and 1.
-top-p: 0.95	(95%)
-prompt: the cat jumped over the
-most-probable next words:
-fence		0.30
-wall		0.25
-river		0.07
-building	0.06
-moon		0.20
-toy			0.15
-baby		0.10
-dog			0.08
-sofa		0.05
-table		0.05
-chair		0.20
-
-1: rearrange the list in desc order
-fence		0.30
-wall		0.25
-moon		0.20
-chair		0.20
-toy			0.15
-baby		0.10
-dog			0.08
-river		0.07
-building	0.06
-sofa		0.05
-table		0.05
-
-2: filter only those that form a cumulative 95%
-fence		0.30
-wall		0.25
-moon		0.20
-chair		0.20
-
-3. it will pick one randomly.
-
-top-k: size of the list of most-probable words:
- -> 11 words
-fence		0.30
-wall		0.25
-river		0.07
-building	0.06
-moon		0.20
-toy			0.15
-baby		0.10
-dog			0.08
-sofa		0.05
-table		0.05
-chair		0.20
-
-top-k = 5
-fence		
-wall		
-river		
-building	
-moon		
-
-temperature
-top-p
-top-k
-
-Capitalization: Capital ization
-Generalization: General ization
-
-Generative: Gener ative
-Alternative: Altern ative
-
-
-Documents: created Embeddings
-user query: that has to search these documents for a relevant response.
-embed the query also.
-
-CTRL+SHIFT+P
-
-DAY 02:
-=======
-RAG vs Fine-tuning (re-training a model):
 ---
-RAG: documents
+Lab Setup:
 
+Python 3.13.11
+VS Code
+OpenAI API Key (LLM)
 
-Data/datasets: Excel, csv, tables (DBs), APIs....docs also.
-GPT, Claude, Gemini --- LLMs/models --- trained on generic data collected from the internet.
-	- they can answer or perform any task
-	- generate text, summary, image, email, analyze, ....
-	
-Specific LLM for our purpose only.
-Legal, Medical, Financial....
-- They need domain/business specific LLMs
-- Need a lot of data to begin with
-- Create their own LLMs
-	- a lot of resources -> servers, people (with the right expertise), time, money
-- Building from scratch is difficult
-- Take an existing model, and re-train/fine-tune it on their data.
-- Configure the model on their servers (on-prem, cloud) - within their network
-	- the data does not go outside the enterprise
-- Data cleansing
-	- Preparing the data
-	- Determine which data points/columns/features to use
-	- manage missing/invalid
-- Split the data into train, test and validate
-- the actual implementation of the NN.
-- will never work in the first try
-	- retry again and again with different parameter settings etc. till you come with a "comfortble" acceptance that the LLM is working as expected on YOUR DATA!!!!
-	
-Fine-tuning: define behavior of the model
-	- What role to play
-	- what output in what format to return back
-	- any constraints
-	
-Steps for HOLs:
-1. clone the daily repo.
-2. Create python virtual env	-> python -m venv .venv
-3. Actiavte the virtual env		-> .venv\Scripts\Activate.ps   (source .venv/bin/activate)
-4. Create the .env files		-> Create in the root folder
-5. Add the OPENAI_API_KEY to the .env file (save)
-6. Run pip installs
-7. Work on TODOs
-8. Run the program
+git clone https://github.com/AjaySingala/ajs_walmart_apr2026_hol_day02
 
-Day 03:
-=======
-LLM internal basics:
-- Tokenization
-- Vectorization
-- Embeddings
-	- vector (multi-dimensional) space
-- Context
-- Context window
-- sampling and inference
-	- temperature
-	- top-p
-	- top-k
-	- probability
-		- how does the next word get generated
-- impact of tokens on cost
-- importance of giving relevant and proper prompts
-	- System Message (role)
-	- User Message (query)
-	- AI/Assistant Message (response from the AI tool/LLM/model)
-- demos
-RAG:
-- What is RAG?
-- Importance of RAG to enterprise
-	- avoid hallucination
-	- give grounded answers
-- RAG vs Fine-tuning
-- RAG Pipeline
-	- Ingest
-	- Chunking
-	- Embeddings
-	- Retrieve - the most relevant chunks for a given query
-		- embed the query
-	- Answer generation - by send the retrieved chunks to the LLM
-- Demo
+cd ajs_walmart_apr2026_hol_day02
+Open the folder in VSC.
 
+1) Create Python Virtual Environment:
+python -m venv .venv
 
-RAG System Prompt:
+2) Activate the virtual environment by running:
+On Windows:
+.venv\Scripts\Activate.ps1
+
+On Mac/Linux:
+source .venv/bin/activate
+
+The prompt on the terminal should show (.venv) on the left.
+
+3) Set default Python interpreter in VSC:
+- In VSC, press CTRL+SHIFT+P
+- Search for and select “Python: Select interpreter”
+- Select the python.exe from the virtual environment where it says “recommended”.
+
+4) Create the .env file in the root folder (next to config.py):
+OPENAI_API_KEY=""
+MODEL_NAME="gpt-4o-mini"
+TEXT_EMBEDDING_MODEL="text-embedding-3-small"
+
+5) Install the packages.
+Each folder has an install.txt file.
+Copy and run the "pip install" commands from this file.
+
+python -m python -m pip install ....
+
 ---
-You a HR assistant for Walmart Employees.
-
-Answer ONLY from the provided context.
-If not found, look for information at these locations:
-https://www.walmart.com
-https://www.walmart-policies.com
-https://www.glassdoor.com
-
-If still not found, say "I don't know".
-
-Generate the answer and provide details about the source from where you got the data.
-If it is from the provided context, then mention the filename, page number, section (if applicable).
-
-Context:
-{context}
-
-Query:
-{Query}
-
-ChromaDB -> score is usually between 0 and 1.
-FAISS -> distance - lower the value, the more relevant it is
-
-1234567890   -> **********  -> Masking
-1234567890   -> REMOVE
-1234567890   -> [PHONE NUMBER] -> Place holder
-
-Ajay Singala 	-> [CUSTOMER 1]
-John Smith		-> [CUSTOMER 2]
-
-Day 04:
-=======
-Some documents are missing.
-Documents are missing certain information.
-Mistake in metadata tagging
-	- "material" - "Green", "light weight" and not "cotton", "wool".
-	- "doctype": LeavePolicy is mistakenly tagged as "HRPolicy"
-
-Chunking strategy
-Embedding model's capabilities
-Retrieval logic
-top-k value
-Ambiguous queries
-
-Day 05:
-=======
-State management:
-- how does data/info flow between nodes/agents
-- how can the output of one nocde/agent become the input of another?
-
-This cannot happen:
-- NA will call NB and pass it's data as an argument.
-- do it with the help of explicit coding conditions:
-	- if-else block
+LLM (gpt-4o-mini)
+	- give a prompt to the mode, prompt is converted into tokens.
+	- You are charged for the input tokens (20 tokens).
+	- Attach a PDF - 3000 tokens.
+	- charged for 3020 input tokens.
+	- LLM will give a response. Reponse is 2500 tokens.
+	- charged for: 3020 + 2500 tokens.
 	
-Not necessary NA -> NB. Depending on conditions, NA -> NC
-
-All these nodes are nothing but functions/methods.
-And they will all receive the "state" as an argument by default.
-def nodeA(state):		(START)
-	qry = state["query"]
-	# do something with that query.
-	# call a tool to an API to get some data.
-	# some processing of the retrieved data.
-	# store the result back into the state.
-	return {"nodeAOutput": result}
+Embedding (text-embedding-3-small)
+- count of embeddings
+- RAG
+	- we have first do the embedding and store that in a Vector DB.
+	- use that vectorDB, 
+	- extract the relevant "answer" from the vectorDB
+	- and pass the result to the LLM, which will then generate the answer.
 	
-def nodeB(state):
-	input = state["nodeAOutput"]
-	# do some processing, tool calling
-	:
-	return {"nodeBOutput": data}
+Day 2:
+======
+RAG: Retrieval Augmented Generation.
 
-def nodeC(state):
+gpt-4o-mini: has already been trained on huge dataset (public).
+I want retrain (fine-tune) the model to work on my company's data that is not publicly available.
+Or
+I want to fine-tune it for a specific domain only.
+- Legal (lawyers)
+- Medical fraternity
+- Accountants
 
-def nodeD(state):		(END)
+To create a new model from scratch is very expensive and time consuming.
+- you need a lot of data to train.
+- Building the algorithim (NN) for your model. Require expertise.
+- resources: people, infra, money.
 
-Coordinator/Orchestrator that defines the WF.
-- what are the different nodes that participate in the WF.
-- what is the starting point (which node) in the WF.
-- which is the end point.
+Take an existing model and retrain on their data - fine-tune.
+- they do not start from scratch.
+- the model is already built.
+- Need some expertise who can clean the data and train (retrain) the model to work with only their data.
 
-LangSmith:
----
-- Register on the smith.langchain.com
-- Free trial
-- API Key
+1) data
+2) behavior:
+- By default, most models are "Act as a personal AI assistant".
+- What role is it supposed to play.
+	- System message: 
+		Act as an expert legal advisor.
+		When giving responses, they should be clear, concise and to-the-point in a professional tone.
+		
+RAG: 
+	- you don't retrain (fine-tune) the model.
+	- you just ask the model to refer to a "trusted source" to generate it's output.
+Fine-tuning:
+	- you actually retrain the model to work with your specific data.
+	
+Ingestion: 25 documents
+out of these, only 3 are about ecommerce related T&Cs (refund policy).
+in those 3 documents, only specific sections/paras are about refund policy.
+
+Query: what is your refund policy?
+query embedding
+
+Day 3:
+===
+Azure -> AI Portal -> Microsoft Foundry
+RAG source -> Ingest docs (Azure Blobs, SharePoint Lists, S3...)
+- chunking, embedding, vectorization (vectorDB).
+- Semantic search, Indexing.
+
+VectorDB: FAISS
+ChromaDB -> On certain VMs, does not work.
+FAISS: both, GPU and CPU compatibility.
+faiss
+faiss-cpu
+
+LLM -> was returning the entire answer in one block.
+stream=True -> return one word at a time (streaming)
+
+"Transformer Architecture."
+
+Embeddings matches "meaning", not the "intent".
+query: leave policy for maternity
+Retrieved chunk: general leave rules.
+
+Close meaning, but the intent is wrong.
+
+Day 4:
+======
+TaskA()
+{
+	returns "A"
+}
+
+TaskB(taskAValue)
+{
+	returns "B"
+}
+
+TaskC(taskBValue)
+{
+	returns "C"
+}
+
+TaskD(taskAValue, taskBValue)
+{
+	returns "D"
+}
+
+rvA = TaskA()
+rvB = TaskB(rvA)
+rvC = TaskC(rvB)
+
+pass rvC to LLM
+
+State Management - state is available to all the tasks (nodes).
