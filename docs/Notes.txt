@@ -220,3 +220,82 @@ rvC = TaskC(rvB)
 pass rvC to LLM
 
 State Management - state is available to all the tasks (nodes).
+
+Day 5:
+===
+In LangGraph, whenever a the workflow (graph) is initiated, it initializes the State as well.
+Each node in the graph will automatically receive the State object.
+The return of each node, goes into the State.
+
+# LangGraph-based Orchestration.
+# Init the graph.
+graph  = StateGraph(AgentState)
+
+# Define the nodes.
+graph.add_node("nodeA", nodeA)
+graph.add_node("nodeB", nodeB)
+graph.add_node("nodeC", nodeC)
+graph.add_node("nodeFoo", foo)
+
+# Start point.
+graph.add_edge("nodeA", START)
+
+# Define the flow.
+graph.add_edge("nodeA", "nodeB")
+# graph.add_edge("nodeB", "nodeC")
+
+# Define any conditional flows.
+graph.add_conditional_edges(
+    "nodeB",
+    nodeX,
+    {
+        "foo": "nodeFoo",
+		"nodeC": "nodeC"
+        END: END,
+    },
+)
+
+# The end node.
+graph.add_edge("nodeC", END)
+
+app = graph.compile()
+
+# Invoke the app with initial values for the State object.
+app.invoke({"message": query, "k2": "v2"}
+
+
+class AgentState(TypedDict):
+	query: str
+	nodeA_result: str
+	nodeB_result: str
+	nodeC_result: str
+	foo_result: str
+	nodeX_result: str
+	final_result: str
+	
+nodeA(state: AgentState):
+{
+	query = state["query"]
+	:
+	:
+	return {"nodeA_result": output})
+}
+	
+nodeB(state: AgentState):
+{
+	nodeAValue = state["nodeA_result"]
+	:
+	:
+	return {"nodeB_result": output})
+}
+nodeC(state: AgentState):
+{
+	nodeAValue = state["nodeA_result"]
+	nodeBValue = state["nodeB_result"]
+	:
+	:
+	return {"nodeC_result": output})
+}
+
+
+	
