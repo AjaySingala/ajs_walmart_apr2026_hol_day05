@@ -1,301 +1,327 @@
-3 types of messages:
-- System Message
-- User Message
-- AI Message
+Day 1:
+===
+System Message - Default.
+User Message - input.
+	- any data (context) hat is provided
+	- docs/text
+AI Message - response from the model.
 
-It is not necessary that 1 word == 1 token.
-It may be possible that 1 word is broken down into 2 or more tokens.
-Not just words, it also includes all characters, punctuations, special characters.
+LLMs work on Probability:
+- Which is the next best word to be returned to the user?
 
-Machines do not understand human spoken language.
-They only understand numbers.
-So, tokens are represented as numbers.
-
-Every model (LLM) has it's own Vocabulary.
-
-Tokenization
-Vectorization
-	- Count
-	
-Prompt: 
-The capital of France is
-
-Inference:
-Los Angeles		0.30
-Paris			0.40
-Rome			0.15
-Tokyo			0.1
-Floor			0.01
-New York		0.20
-Car				0.01
-:
-:
-
-top-p = 0.9 (90%)
-Paris			0.40
-Los Angeles		0.30
-New York		0.20
-
-Output:
-The capital of France is Paris
-
-top-k: 25 / 50 / 200
-Determines the size of the list of probable words to work on.
-
-Tokenization
-Vectorization
-Embeddings
-	- Adding meaning and context to the words.
-	
-Bank
-- Blood bank
-- Financial Bank
-- Bank of a river
-
-What can I find near a river bank.
-What is the interest rate of a 20 year home loan?
-
-I love AI
-Tokenization: ["I", "love", "AI"]
-Vectorization: [102, 450, 89]
-Embedding (coordinates): [ [0.12, 0.5], [0.88, 0.1], [0.4, 0.9]]
-	- GPS coordinates.
-	
-VectorDBs:
-ChromaDB
-FAISS
-Weaviate
-pgvector
+Tokens: words broken into tokens.
+Numbers: are numerical representation of the tokens.
+	- Dictionary (of words)
+	- LLMs have a dictionary (vocabulary) of tokens (numerical) in different supported languages.
+	- it is not just words in the vocabulary. It is also about punctuations, special chars, etc.
+	- One word is broken into multiple tokens.
 
 ---
-Lab Setup:
+Probability:
+LLMs Neural Networks (NNs).
+- very complex NNs.
 
-Python 3.13.11
-VS Code
-OpenAI API Key (LLM)
+Query: Write a creative poem on Introduction to Generative AI.
 
-git clone https://github.com/AjaySingala/ajs_walmart_apr2026_hol_day02
+The entire query is passed to the LLM:
+Write a creative poem on Introduction to Generative AI.
+	- The words are converted into tokens.
+	
+The NN comes with a list of next probable words:
+The 	0.65
+Is		0.13
+A		0.86
+From	0.43
+India	0.06
+AI
+Where
+:
+:
 
-cd ajs_walmart_apr2026_hol_day02
-Open the folder in VSC.
+Returns "A".
+Then passes the query + "A" to the LLM again.
 
-1) Create Python Virtual Environment:
+"Write a creative poem on Introduction to Generative AI. A"
+List of most probable words:
+duty	0.4
+spark	0.9
+fire	0.1
+cloud	0.45
+:
+
+Return "spark".
+Passes:
+"Write a creative poem on Introduction to Generative AI. A spark"
+list of probable words:
+---
+
+Vectorization:
+Count Vectorization
+
+Temperature: controls randomness of the output.
+- value is between 0 and 1
+- 0: it is more deterministic
+- 1: it is more creative
+
+top-p: must be between 0 and 1.
+top-p: 0.9 (90%)
+The 	0.30
+Is		0.15
+A		0.45
+
+From	0.15
+India	0.10
+AI		0.05
+Where	0.01
+:
+:
+
+top-k: can be any number
+top-k = 50
+The 	0.30
+Is		0.15
+A		0.45
+From	0.15
+India	0.10
+
+Also used for further filtering after searching.
+
+top-p=0.8 (80%)
+---
+Embeddings:
+Giving meaning to the tokens given a context.
+
+Blood Bank		- Medicinal
+Bank of a River	- water-bodies
+ICICI Bank		- Money
+
+Embs are numerical representation of the "location" of the word/token in a gi en multi-dimension vector.
+
+They are like GPS co-ords.
+bank: [0.24, 0.56, 0.87]
+
+loan from a bank : bank - [0.24, 0.56, 0.87]
+river bank: bank - [0.40, 0.34, 0.98]
+blood bank: bank - [0.20, 0.30, 0.50]
+
+Search using Embeddings:
+- do not search word-to-word.
+- not a literal word search.
+- It is a "similarity" or "semantic" search.
+
+Words/tokens -> embeddings
+supply -> 12345 -> [,,]
+
+How does AI help in supply chain -> tokens+embs?
+supply -> 12345 -> [,,]
+
+
+On your desktop, create a folder called "HOL" (Hands-on Labs)
+Navigate to the HOL folder on the command prompt.
+cd HOL
+git clone <github url>
+
+git clone https://github.com/AjaySingala/ajs_walmart_apr2026_hol_day01.git
+Creates a folder "ajs_walmart_apr2026_hol_day01" under "HOL".
+
+Open this folder in VSC
+Create the .env file in the root folder of your project.
+Configure your Python Virtual Envionment.
+Create venv:
 python -m venv .venv
 
-2) Activate the virtual environment by running:
-On Windows:
-.venv\Scripts\Activate.ps1
-
-On Mac/Linux:
-source .venv/bin/activate
-
-The prompt on the terminal should show (.venv) on the left.
-
-3) Set default Python interpreter in VSC:
-- In VSC, press CTRL+SHIFT+P
-- Search for and select “Python: Select interpreter”
-- Select the python.exe from the virtual environment where it says “recommended”.
-
-4) Create the .env file in the root folder (next to config.py):
-OPENAI_API_KEY=""
-MODEL_NAME="gpt-4o-mini"
-TEXT_EMBEDDING_MODEL="text-embedding-3-small"
-
-5) Install the packages.
-Each folder has an install.txt file.
-Copy and run the "pip install" commands from this file.
-
-python -m python -m pip install ....
-
----
-LLM (gpt-4o-mini)
-	- give a prompt to the mode, prompt is converted into tokens.
-	- You are charged for the input tokens (20 tokens).
-	- Attach a PDF - 3000 tokens.
-	- charged for 3020 input tokens.
-	- LLM will give a response. Reponse is 2500 tokens.
-	- charged for: 3020 + 2500 tokens.
+Activate the venv:
+Windows:
+	.venv\Scripts\Activate.ps1
 	
-Embedding (text-embedding-3-small)
-- count of embeddings
-- RAG
-	- we have first do the embedding and store that in a Vector DB.
-	- use that vectorDB, 
-	- extract the relevant "answer" from the vectorDB
-	- and pass the result to the LLM, which will then generate the answer.
+Mac/Linux:
+	source .venv/bin/activate
 	
+Set the default Python interpreter in VSC:
+Install the Python (Microsoft) Extension.
+CTRL+SHIFT+P
+select: "Python: Select Interpreter"
+
+This is very useful when you have multiuple Python versions on your machine.
+
+Now, install packages:
+- In each folder, refer to the installs.txt file for dependencies.
+- Run each "pip install".
+
+Run the code file(s).
+
 Day 2:
-======
-RAG: Retrieval Augmented Generation.
+===
+https://github.com/AjaySingala/ajs_walmart_apr2026_hol_day01
 
-gpt-4o-mini: has already been trained on huge dataset (public).
-I want retrain (fine-tune) the model to work on my company's data that is not publicly available.
-Or
-I want to fine-tune it for a specific domain only.
-- Legal (lawyers)
-- Medical fraternity
-- Accountants
-
-To create a new model from scratch is very expensive and time consuming.
-- you need a lot of data to train.
-- Building the algorithim (NN) for your model. Require expertise.
-- resources: people, infra, money.
-
-Take an existing model and retrain on their data - fine-tune.
-- they do not start from scratch.
-- the model is already built.
-- Need some expertise who can clean the data and train (retrain) the model to work with only their data.
-
-1) data
-2) behavior:
-- By default, most models are "Act as a personal AI assistant".
-- What role is it supposed to play.
-	- System message: 
-		Act as an expert legal advisor.
-		When giving responses, they should be clear, concise and to-the-point in a professional tone.
+Fine tuning:
+---
+You have to retrain the model on specific data.
+Legal firm - have a huge dataset related to legal aspects.
+You want a "chatbot" that answers queries related to legal matters ONLY!
+	- NOT: 
+		- what is the GDP of France?
+		- who won the last FIFA WC?
+		- What is the latest news?
+	- CAN:
+		- What is the regulation regarding non-payment of loans?
 		
-RAG: 
-	- you don't retrain (fine-tune) the model.
-	- you just ask the model to refer to a "trusted source" to generate it's output.
-Fine-tuning:
-	- you actually retrain the model to work with your specific data.
+One of top credit rating agencies
+	- AAA, AAA-...
+	- A very niche way of working.
+	- They do not want to share their trade secret.
+	- They fine-tuned an existiung LLM with their own dataset (huge)
+		- LLama3 - Meta (Facebook)
+		- setup on their own environment (cloud)
+		- trained it on their data.
+		- create their own chatbot (like ChatGPT) that employees use daily.
+		- ChatGPT, Gemini, Claude, Copilot are banned for employees.
+		
+Why not create your own LLM from scratch?
+	- not so easy
+	- very expensive (lot of resources, money, people, infra, time)
+	- you need to expertise to build the LLM from scratch
 	
-Ingestion: 25 documents
-out of these, only 3 are about ecommerce related T&Cs (refund policy).
-in those 3 documents, only specific sections/paras are about refund policy.
+As part of fine tuning:
+	- cleanse the data
+	- domain expertise
+	- train the LLM on your cleansed data (70%)
+	- test it on an unseen dataset (20%)
+	- validate on a 3rd unseen dataset (10%)
+	- confidence level - answering properly
 
-Query: what is your refund policy?
-query embedding
+Fine tuning - defining the behavior of your model
+	- default -> You are a Personal Assistant.
+	- Enterprise will define a specific role (System Prompt):
+		You are an expert Legal Advisor
+		Refer to only your training data when answering questions related to legal matters of the company.
+		Do not look for answers on the internet and do not make any assumptions.
+		
+		Provide the answers in a clear and concise manner.
+		Keep the tone professional.
+		
+	
+https://github.com/AjaySingala/ajs_walmart_apr2026_hol_day02
+
+E.g.:
+HOL\ajs_walmart_apr2026_hol_day01
+HOL\ajs_walmart_apr2026_hol_day02
+HOL\ajs_walmart_apr2026_hol_day03
+HOL\ajs_walmart_apr2026_hol_day03
+
+1. Clone this repo
+2. Open the folder in VSC
+3. Create your .env file (next to config.py).
+4. Create the Py Virtual env
+5. Activate the virtual env
+6. Configure VSC to use the venv Python interpreter (CTRL+SHIFT+P -> Python: Select Interpreter)
+7. pip install (from specific folders)
+8. Complete TODOs
+9. Run code.
 
 Day 3:
 ===
-Azure -> AI Portal -> Microsoft Foundry
-RAG source -> Ingest docs (Azure Blobs, SharePoint Lists, S3...)
-- chunking, embedding, vectorization (vectorDB).
-- Semantic search, Indexing.
+VectorDB: FAISS - lighweight, CPU
+- ChromaDB -> GPU
+- Weaviate
+- pgvector
 
-VectorDB: FAISS
-ChromaDB -> On certain VMs, does not work.
-FAISS: both, GPU and CPU compatibility.
-faiss
-faiss-cpu
+in-memory and persisted.
 
-LLM -> was returning the entire answer in one block.
-stream=True -> return one word at a time (streaming)
+Pipeline:
+- uses a VectorDB
+- loads files (pdf & txt)
+- chunks
+- embeds
+- creates index
+- retrieves
+	- query embedding
+	- top-k
+	- filtering
+- reranking
+- streams the answer
 
-"Transformer Architecture."
+Day 04:
+===
+@tool
+Cannot be called directly.
+rag_search("how many leave days can i get?")
 
-Embeddings matches "meaning", not the "intent".
-query: leave policy for maternity
-Retrieved chunk: general leave rules.
+tools have to be "invoked"
 
-Close meaning, but the intent is wrong.
 
-Day 4:
-======
-TaskA()
-{
-	returns "A"
-}
+def reasoningNode(state):
+	q = state["query"]
+	
+	output = foo_tool.invoke()
+	
+	store the result in the state.
+	return {"key", output}
 
-TaskB(taskAValue)
-{
-	returns "B"
-}
+def insightsNode(state):
+	requires the reasonData (context) to pass to the LLM to extract insights from the reasoning data.
+	
+	reasonData = state["reasonData"]
+	
+	it may require the query!!!  (use the qry variable)
+	q = state["query"]
 
-TaskC(taskBValue)
-{
-	returns "C"
-}
+	store the result in the state.
+	state["insightsData"] = output
 
-TaskD(taskAValue, taskBValue)
-{
-	returns "D"
-}
+def summaryNode(state):
+	requires the insightsData (context) to pass to the LLM to generate the summary.
+	
+	insightsData = state["insightsData"]
+	
+	it also requires the query!!! (use the qry variable)
+	q = state["query"]
+	
+	Call the llm with the query and the context to generate a summary.
+	
+	store the result in the state.
+	state["summary"] = llm_response
+	
 
-rvA = TaskA()
-rvB = TaskB(rvA)
-rvC = TaskC(rvB)
-
-pass rvC to LLM
-
-State Management - state is available to all the tasks (nodes).
-
+qry = query
+def start(query):
+	reasonData = reasoningNode(query)
+	
+	insightsData = insightsNode(reasonData)
+	
+	summaryData = summaryNode(insightsData)
+	
+	return summaryData
+	
 Day 5:
 ===
-In LangGraph, whenever a the workflow (graph) is initiated, it initializes the State as well.
-Each node in the graph will automatically receive the State object.
-The return of each node, goes into the State.
+Fallback:
+	- Make another call to the LLM with a reformulated query.
+	- Make a call to another LLM to see if it can answer the query.
+		- gpt-4o-mini	-> cheaper model.
+		- alternatively use a better/different LLM to get an answer
+			- gpt-5.1	-> a more expensive model.
+	- Your prompt is strict:
+		- say "I don't know"
+		- Instead, give "generic info to the user"
+		- Call the LLM without a strict prompt
+			- answer from training data/web
+			- disclaimer: "The following info is not from Enterprise source..."
+			
+node1()
+node2()
+node3()
 
-# LangGraph-based Orchestration.
-# Init the graph.
-graph  = StateGraph(AgentState)
+graph = StateGraph(AgentState)
+graph.add_node("firstnode", node1)
+graph.add_node("secondnode", node2)
+graph.add_node("thirdnode", node3)
 
-# Define the nodes.
-graph.add_node("nodeA", nodeA)
-graph.add_node("nodeB", nodeB)
-graph.add_node("nodeC", nodeC)
-graph.add_node("nodeFoo", foo)
+graph.add_edge("firstnode", START)
+graph.add_edge("firstnode", "secondnode")
+graph.add_edge("secondnode", "thirdnode")
 
-# Start point.
-graph.add_edge("nodeA", START)
-
-# Define the flow.
-graph.add_edge("nodeA", "nodeB")
-# graph.add_edge("nodeB", "nodeC")
-
-# Define any conditional flows.
-graph.add_conditional_edges(
-    "nodeB",
-    nodeX,
-    {
-        "foo": "nodeFoo",
-		"nodeC": "nodeC"
-        END: END,
-    },
-)
-
-# The end node.
-graph.add_edge("nodeC", END)
-
-app = graph.compile()
-
-# Invoke the app with initial values for the State object.
-app.invoke({"message": query, "k2": "v2"}
+graph.add_edge("thirdnode", END)
 
 
-class AgentState(TypedDict):
-	query: str
-	nodeA_result: str
-	nodeB_result: str
-	nodeC_result: str
-	foo_result: str
-	nodeX_result: str
-	final_result: str
-	
-nodeA(state: AgentState):
-{
-	query = state["query"]
-	:
-	:
-	return {"nodeA_result": output})
-}
-	
-nodeB(state: AgentState):
-{
-	nodeAValue = state["nodeA_result"]
-	:
-	:
-	return {"nodeB_result": output})
-}
-nodeC(state: AgentState):
-{
-	nodeAValue = state["nodeA_result"]
-	nodeBValue = state["nodeB_result"]
-	:
-	:
-	return {"nodeC_result": output})
-}
 
-
-	
